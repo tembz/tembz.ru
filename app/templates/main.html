@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>tembz</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-900: #050d1a;
+    --navy-800: #091426;
+    --navy-700: #0d1f3c;
+    --navy-600: #122b55;
+    --blue-400: #2d6be4;
+    --blue-300: #4d8ff0;
+    --blue-200: #7fb0f8;
+    --cyan: #00d4ff;
+    --cyan-dim: rgba(0, 212, 255, 0.12);
+    --text-primary: #e8f0fe;
+    --text-secondary: #8bacd4;
+    --text-muted: #4a6888;
+    --border: rgba(45, 107, 228, 0.2);
+    --border-bright: rgba(0, 212, 255, 0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy-900);
+    color: var(--text-primary);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  .glow-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-1 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(45,107,228,0.16) 0%, transparent 70%);
+    top: -150px; right: -100px;
+    animation: drift1 20s ease-in-out infinite;
+  }
+  .glow-2 {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(0,212,255,0.09) 0%, transparent 70%);
+    bottom: 100px; left: -100px;
+    animation: drift2 25s ease-in-out infinite;
+  }
+
+  @keyframes drift1 {
+    0%, 100% { transform: translate(0,0); }
+    50% { transform: translate(-60px, 80px); }
+  }
+  @keyframes drift2 {
+    0%, 100% { transform: translate(0,0); }
+    50% { transform: translate(80px,-50px); }
+  }
+
+  .banner {
+    width: 100%;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+    flex-shrink: 0;
+  }
+
+  .banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    filter: brightness(0.6) saturate(0.8);
+  }
+
+  .banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      transparent 40%,
+      var(--navy-900) 100%
+    );
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 480px;
+    padding: 0 24px 48px;
+    margin-top: -56px;
+  }
+
+  .avatar-wrap {
+    position: relative;
+    width: 88px; height: 88px;
+    margin-bottom: 16px;
+  }
+
+  .avatar-wrap img {
+    width: 88px; height: 88px;
+    border-radius: 50%;
+    border: 3px solid var(--navy-900);
+    display: block;
+    object-fit: cover;
+  }
+
+  .avatar-online {
+    position: absolute;
+    bottom: 4px; right: 4px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--cyan);
+    border: 2px solid var(--navy-900);
+    box-shadow: 0 0 8px var(--cyan);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 8px var(--cyan); }
+    50% { box-shadow: 0 0 16px var(--cyan), 0 0 4px var(--cyan); }
+  }
+
+  .identity {
+    margin-bottom: 20px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .name-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .name {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+  }
+
+  .premium-icon {
+    width: 20px; height: 20px;
+    flex-shrink: 0;
+  }
+
+  .handle {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    transition: opacity 0.2s;
+  }
+
+  .handle:hover { opacity: 0.7; }
+
+  .bio {
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 24px 0;
+  }
+
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .link-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 16px;
+    background: var(--navy-800);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    text-decoration: none;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+    margin-bottom: 8px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .link-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(45,107,228,0.05) 0%, transparent 60%);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .link-card:hover {
+    border-color: var(--border-bright);
+    background: var(--navy-700);
+    transform: translateY(-1px);
+  }
+
+  .link-card:hover::before { opacity: 1; }
+
+  .link-avatar {
+    width: 42px; height: 42px;
+    border-radius: 10px;
+    object-fit: cover;
+    flex-shrink: 0;
+    display: block;
+    filter: grayscale(1);
+    transition: filter 0.2s;
+  }
+
+  .link-avatar.color {
+    filter: grayscale(0);
+  }
+
+  .link-card:hover .link-avatar {
+    filter: grayscale(0);
+  }
+
+  .link-avatar-round {
+    border-radius: 50%;
+  }
+
+  .link-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .link-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .link-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .link-icon {
+    width: 18px; height: 18px;
+    opacity: 0.3;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+    filter: grayscale(1);
+  }
+
+  .link-card:hover .link-icon { opacity: 0.6; }
+
+  .project-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px 3px 3px;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid var(--border-bright);
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+  }
+
+  .project-badge-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 6px var(--cyan);
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .card > * {
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .card > *:nth-child(1) { animation-delay: 0.05s; }
+  .card > *:nth-child(2) { animation-delay: 0.1s; }
+  .card > *:nth-child(3) { animation-delay: 0.15s; }
+  .card > *:nth-child(4) { animation-delay: 0.2s; }
+  .card > *:nth-child(5) { animation-delay: 0.25s; }
+  .card > *:nth-child(6) { animation-delay: 0.3s; }
+  .card > *:nth-child(7) { animation-delay: 0.35s; }
+
+  .footer {
+    position: relative;
+    z-index: 1;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+    padding-bottom: 24px;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 520px) {
+    .banner { height: 160px; }
+    .card { padding: 0 16px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="glow-blob glow-1"></div>
+<div class="glow-blob glow-2"></div>
+
+<div class="banner">
+  <img src="{{ url_for('static', filename='banner.gif') }}" alt="banner"/>
+</div>
+
+<div class="card">
+
+  <div class="avatar-wrap">
+    <img src="{{ url_for('static', filename='baseava.jpeg') }}" alt="tembz"/>
+    <div class="avatar-online"></div>
+  </div>
+
+  <div class="identity">
+    <div class="name-row">
+      <span class="name">tembz</span>
+      <img class="premium-icon" src="{{ url_for('static', filename='sticker.png') }}" alt="premium"/>
+    </div>
+    <a href="https://t.me/tembzz" class="handle" target="_blank">@tembzz</a>
+    <div class="bio">we're just flowers in the void</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Каналы</div>
+
+  <a href="https://t.me/imtembz" class="link-card" target="_blank">
+    <img class="link-avatar link-avatar-round" src="{{ url_for('static', filename='tgk.jpeg') }}" alt="tembz channel"/>
+    <div class="link-info">
+      <div class="link-name">tembz</div>
+      <div class="link-sub">t.me/imtembz</div>
+    </div>
+  </a>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Аккаунты</div>
+
+  <a href="https://github.com/tembz" class="link-card" target="_blank">
+    <img class="link-avatar" src="{{ url_for('static', filename='dsava.jpeg') }}" alt="github"/>
+    <div class="link-info">
+      <div class="link-name">tembz</div>
+      <div class="link-sub">github.com/tembz</div>
+    </div>
+  </a>
+
+  <a href="https://vk.com/tembz" class="link-card" target="_blank">
+    <img class="link-avatar color" src="{{ url_for('static', filename='vkava.jpg') }}" alt="vk page"/>
+    <div class="link-info">
+      <div class="link-name">Сергей П.</div>
+      <div class="link-sub">vk.com/tembz</div>
+    </div>
+  </a>
+
+  <div class="divider"></div>
+
+  <div class="section-label">Проекты</div>
+
+  <a href="/bk/docs" class="link-card" target="_blank">
+    <img class="link-avatar color" src="{{ url_for('static', filename='bk-reports-icon.svg') }}" alt="bk reports"/>
+    <div class="link-info">
+      <div class="link-name">BK Reports</div>
+      <div class="link-sub">API + Telegram Bot</div>
+    </div>
+  </a>
+
+</div>
+
+<div class="footer">tembz.ru</div>
+
+</body>
+</html>

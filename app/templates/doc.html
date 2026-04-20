@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BK Reports — API Reference</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy-900: #050d1a;
+    --navy-800: #091426;
+    --navy-700: #0d1f3c;
+    --navy-600: #122b55;
+    --navy-500: #1a3a6e;
+    --blue-400: #2d6be4;
+    --blue-300: #4d8ff0;
+    --blue-200: #7fb0f8;
+    --cyan: #00d4ff;
+    --cyan-dim: rgba(0, 212, 255, 0.12);
+    --text-primary: #e8f0fe;
+    --text-secondary: #8bacd4;
+    --text-muted: #4a6888;
+    --border: rgba(45, 107, 228, 0.2);
+    --border-bright: rgba(0, 212, 255, 0.3);
+    --green: #4ade80;
+    --yellow: #fbbf24;
+    --sidebar-width: 260px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--navy-900);
+    color: var(--text-primary);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: rgba(5, 13, 26, 0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .nav-logo {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--cyan);
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+  }
+
+  .nav-logo-dot {
+    width: 6px; height: 6px;
+    background: var(--cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--cyan);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .nav-sep {
+    color: var(--text-muted);
+    font-size: 18px;
+    font-weight: 200;
+  }
+
+  .nav-section {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+  }
+
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .nav-back {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .nav-back:hover { border-color: var(--border-bright); }
+
+  .nav-github {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    border: 1px solid var(--border-bright);
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--cyan);
+    text-decoration: none;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--cyan-dim);
+    transition: all 0.2s;
+  }
+  .nav-github:hover { background: rgba(0,212,255,0.22); }
+
+  .layout {
+    display: flex;
+    padding-top: 56px;
+    min-height: 100vh;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: var(--sidebar-width);
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    background: var(--navy-900);
+    padding: 24px 0;
+    z-index: 40;
+  }
+
+  .sidebar::-webkit-scrollbar { width: 4px; }
+  .sidebar::-webkit-scrollbar-track { background: transparent; }
+  .sidebar::-webkit-scrollbar-thumb { background: var(--navy-600); border-radius: 2px; }
+
+  .sidebar-group {
+    margin-bottom: 8px;
+  }
+
+  .sidebar-group-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    padding: 8px 20px 6px;
+  }
+
+  .sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    text-decoration: none;
+    transition: background 0.15s;
+    border-left: 2px solid transparent;
+    cursor: pointer;
+  }
+
+  .sidebar-item:hover {
+    background: rgba(45, 107, 228, 0.08);
+  }
+
+  .sidebar-item.active {
+    background: rgba(45, 107, 228, 0.12);
+    border-left-color: var(--cyan);
+  }
+
+  .sidebar-method {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    padding: 2px 6px;
+    border-radius: 3px;
+    min-width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .m-get { background: rgba(74,222,128,0.1); color: var(--green); }
+  .m-post { background: rgba(251,191,36,0.1); color: var(--yellow); }
+
+  .sidebar-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sidebar-item.active .sidebar-name {
+    color: var(--text-primary);
+  }
+
+  .content {
+    margin-left: var(--sidebar-width);
+    flex: 1;
+    padding: 48px 64px;
+    max-width: 900px;
+  }
+
+  .method-block {
+    margin-bottom: 80px;
+    padding-bottom: 80px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .method-block:last-child {
+    border-bottom: none;
+  }
+
+  .method-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .method-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: 5px;
+    flex-shrink: 0;
+    margin-top: 6px;
+  }
+
+  .method-title {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    line-height: 1.2;
+  }
+
+  .method-path {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .method-path-val {
+    color: var(--blue-200);
+  }
+
+  .method-desc {
+    font-size: 15px;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 36px;
+    max-width: 640px;
+  }
+
+  .block-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .block-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .auth-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    margin-bottom: 36px;
+  }
+
+  .auth-badge.no-auth {
+    background: rgba(45,107,228,0.08);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+  }
+
+  .auth-badge.required {
+    background: rgba(251,146,60,0.1);
+    border: 1px solid rgba(251,146,60,0.3);
+    color: #fb923c;
+  }
+
+  .auth-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .no-auth .auth-dot { background: var(--text-muted); }
+  .required .auth-dot {
+    background: #fb923c;
+    box-shadow: 0 0 6px rgba(251,146,60,0.6);
+  }
+
+  .params-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 36px;
+    font-size: 14px;
+  }
+
+  .params-table th {
+    text-align: left;
+    padding: 10px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: var(--navy-800);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .params-table th:first-child { border-radius: 8px 0 0 0; }
+  .params-table th:last-child { border-radius: 0 8px 0 0; }
+
+  .params-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .params-table tr:last-child td { border-bottom: none; }
+  .params-table tr:hover td { background: rgba(45,107,228,0.04); }
+
+  .param-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--cyan);
+  }
+
+  .param-type {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--blue-200);
+  }
+
+  .param-required {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+  }
+
+  .req { background: rgba(251,191,36,0.12); color: var(--yellow); }
+  .opt { background: rgba(74,222,128,0.1); color: var(--green); }
+
+  .code-block {
+    background: var(--navy-800);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 36px;
+  }
+
+  .code-block-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--navy-700);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .code-block-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+  }
+
+  .code-block-copy {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+
+  .code-block-copy:hover { color: var(--cyan); }
+
+  .code-block pre {
+    padding: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-x: auto;
+  }
+
+  .c-key { color: var(--blue-200); }
+  .c-str { color: #86efac; }
+  .c-num { color: #fca5a5; }
+  .c-bool { color: var(--yellow); }
+  .c-comment { color: var(--text-muted); }
+  .c-url { color: var(--cyan); }
+  .c-header { color: var(--yellow); }
+  .c-method { color: var(--green); }
+
+  .response-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-bottom: 12px;
+    background: rgba(74,222,128,0.08);
+    border: 1px solid rgba(74,222,128,0.2);
+    color: var(--green);
+  }
+
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--navy-900); }
+  ::-webkit-scrollbar-thumb { background: var(--navy-600); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--blue-400); }
+
+  @media (max-width: 768px) {
+    nav { padding: 0 16px; }
+    .nav-section { display: none; }
+
+    .sidebar { display: none; }
+
+    .content {
+      margin-left: 0;
+      padding: 28px 20px 48px;
+      max-width: 100%;
+    }
+
+    .method-block {
+      margin-bottom: 56px;
+      padding-bottom: 56px;
+    }
+
+    .method-title {
+      font-size: 20px;
+    }
+
+    .method-header {
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .method-badge {
+      margin-top: 2px;
+    }
+
+    .method-desc {
+      font-size: 14px;
+    }
+
+    .params-table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      font-size: 13px;
+    }
+
+    .params-table th,
+    .params-table td {
+      padding: 10px 12px;
+      white-space: nowrap;
+    }
+
+    .params-table td:last-child {
+      white-space: normal;
+      min-width: 160px;
+    }
+
+    .code-block pre {
+      padding: 14px 16px;
+      font-size: 11px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .code-block-header {
+      padding: 8px 14px;
+    }
+
+    .auth-badge {
+      font-size: 10px;
+      padding: 5px 12px;
+    }
+
+    .mobile-nav {
+      display: block;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav-github span { display: none; }
+    .nav-github { padding: 7px 10px; }
+
+    .method-title { font-size: 18px; }
+  }
+
+  .mobile-nav {
+    display: none;
+    position: sticky;
+    top: 56px;
+    z-index: 30;
+    background: var(--navy-800);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+  }
+
+  .mobile-nav select {
+    width: 100%;
+    background: var(--navy-700);
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    padding: 9px 12px;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238bacd4' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <a href="/bk/docs" class="nav-logo">
+      <div class="nav-logo-dot"></div>
+      bk_reports
+    </a>
+    <span class="nav-sep">/</span>
+    <span class="nav-section">API Reference</span>
+  </div>
+  <div class="nav-right">
+    <a href="https://tembz.ru/" class="nav-back">
+      <img src="{{ url_for('static', filename='tgk.jpeg') }}" width="22" height="22" style="border-radius:50%;display:block;" alt="tembz"/>
+    </a>
+    <a href="/bk/docs/errors" class="nav-github" style="border-color:rgba(248,113,113,0.3);color:#f87171;background:rgba(248,113,113,0.08);">
+      Ошибки
+    </a>
+    <a href="https://github.com/tembz/bk_reports_backend" class="nav-github" target="_blank">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.295 24 12c0-6.63-5.37-12-12-12"/></svg>
+      GitHub
+    </a>
+  </div>
+</nav>
+
+<div class="layout">
+
+  <div class="mobile-nav">
+    <select onchange="document.querySelector(this.value).scrollIntoView({behavior:'smooth', block:'start'})">
+      <optgroup label="Авторизация">
+        <option value="#authIntro">Обзор · методы авторизации</option>
+        <option value="#createToken">POST — createToken</option>
+        <option value="#createCode">POST — createCode</option>
+      </optgroup>
+      <optgroup label="Отчёты">
+        <option value="#reportGet">GET — report.get</option>
+        <option value="#reportCreate">POST — report.create</option>
+      </optgroup>
+      <optgroup label="Долги">
+        <option value="#creditGet">GET — credit.get</option>
+        <option value="#creditCreate">POST — credit.create</option>
+        <option value="#creditToggle">GET — credit.toggle</option>
+      </optgroup>
+      <optgroup label="Пользователи">
+        <option value="#userGet">GET — user.get</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Авторизация</div>
+      <a class="sidebar-item active" href="#authIntro">
+        <span class="sidebar-name" style="color:var(--text-secondary);">Обзор</span>
+      </a>
+      <a class="sidebar-item" href="#createToken">
+        <span class="sidebar-method m-post">POST</span>
+        <span class="sidebar-name">createToken</span>
+      </a>
+      <a class="sidebar-item" href="#createCode">
+        <span class="sidebar-method m-post">POST</span>
+        <span class="sidebar-name">createCode</span>
+      </a>
+    </div>
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Отчёты</div>
+      <a class="sidebar-item" href="#reportGet">
+        <span class="sidebar-method m-get">GET</span>
+        <span class="sidebar-name">report.get</span>
+      </a>
+      <a class="sidebar-item" href="#reportCreate">
+        <span class="sidebar-method m-post">POST</span>
+        <span class="sidebar-name">report.create</span>
+      </a>
+    </div>
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Долги</div>
+      <a class="sidebar-item" href="#creditGet">
+        <span class="sidebar-method m-get">GET</span>
+        <span class="sidebar-name">credit.get</span>
+      </a>
+      <a class="sidebar-item" href="#creditCreate">
+        <span class="sidebar-method m-post">POST</span>
+        <span class="sidebar-name">credit.create</span>
+      </a>
+      <a class="sidebar-item" href="#creditToggle">
+        <span class="sidebar-method m-get">GET</span>
+        <span class="sidebar-name">credit.toggle</span>
+      </a>
+    </div>
+    <div class="sidebar-group">
+      <div class="sidebar-group-title">Пользователи</div>
+      <a class="sidebar-item" href="#userGet">
+        <span class="sidebar-method m-get">GET</span>
+        <span class="sidebar-name">user.get</span>
+      </a>
+    </div>
+  </aside>
+
+  <main class="content">
+
+    <div class="method-block" id="authIntro" style="margin-bottom: 64px; padding-bottom: 64px;">
+      <div class="section-label" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--text-muted);letter-spacing:.15em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+        <span style="display:block;width:24px;height:1px;background:var(--cyan)"></span>
+        Обзор
+      </div>
+      <h1 style="font-size:26px;font-weight:800;letter-spacing:-0.02em;margin-bottom:12px;">Авторизация</h1>
+      <p style="font-size:15px;color:var(--text-secondary);line-height:1.75;margin-bottom:36px;max-width:640px;">
+        API поддерживает три способа авторизации. Передавайте один из заголовков в каждом запросе.
+      </p>
+
+      <div style="display:flex;flex-direction:column;gap:2px;margin-bottom:40px;">
+        <div style="padding:20px 24px;background:var(--navy-800);border:1px solid var(--border);border-radius:10px 10px 0 0;display:flex;align-items:flex-start;gap:20px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:4px;background:rgba(45,107,228,0.12);border:1px solid var(--border);color:var(--blue-200);white-space:nowrap;margin-top:2px;">Bearer</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Токен</div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">Основной способ для пользовательских запросов. Передаётся в заголовке <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:12px;">Authorization: Bearer &lt;token&gt;</code> (POST) или query-параметром <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:12px;">?token=</code> (GET). Получить токен — <a href="#createToken" style="color:var(--blue-300);text-decoration:none;">auth.createToken</a>.</div>
+          </div>
+        </div>
+        <div style="padding:20px 24px;background:var(--navy-800);border:1px solid var(--border);border-left:1px solid var(--border);display:flex;align-items:flex-start;gap:20px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:4px;background:rgba(251,146,60,0.1);border:1px solid rgba(251,146,60,0.25);color:#fb923c;white-space:nowrap;margin-top:2px;">SecretKey</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Secret Key <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:6px;">· используется Telegram-ботом</span></div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">HMAC-подпись, которую генерирует бот из <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:12px;">user_id</code> и <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:12px;">secret_key</code> из конфига. Позволяет боту обращаться к любому методу API от имени пользователя без хранения токенов. Передаётся в заголовке <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:12px;">SecretKey: &lt;value&gt;</code>.</div>
+          </div>
+        </div>
+        <div style="padding:20px 24px;background:var(--navy-800);border:1px solid var(--border);border-radius:0 0 10px 10px;display:flex;align-items:flex-start;gap:20px;">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;padding:3px 10px;border-radius:4px;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);color:var(--green);white-space:nowrap;margin-top:2px;">InitData</div>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:var(--text-primary);margin-bottom:4px;">Telegram Init Data <span style="font-size:11px;font-weight:400;color:var(--text-muted);margin-left:6px;">· для Mini Apps</span></div>
+            <div style="font-size:13px;color:var(--text-secondary);line-height:1.6;">Данные из <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:12px;">window.Telegram.WebApp.initData</code>. Передаётся в заголовке <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:12px;">InitData: &lt;value&gt;</code> (POST) или query-параметром <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan);font-size:12px;">?init_data=</code> (GET).</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="block-label">Как работает SecretKey</div>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-title">python · bot/tools/tools..py</span>
+          <button class="code-block-copy" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre><span class="c-comment"># secret_key берётся из config.toml</span>
+<span class="c-comment"># результат encode() передаётся в заголовке SecretKey каждого запроса</span>
+
+<span class="c-key">def</span> <span class="c-method">encode</span>(user_id) -> str:
+    sig = hmac.<span class="c-method">new</span>(
+        config.secret_key.<span class="c-method">encode</span>(),
+        <span class="c-method">str</span>(user_id).<span class="c-method">encode</span>(),
+        hashlib.sha256
+    ).<span class="c-method">hexdigest</span>()
+    raw = <span class="c-str">f"{user_id}:{sig}"</span>
+    <span class="c-key">return</span> base64.<span class="c-method">urlsafe_b64encode</span>(raw.<span class="c-method">encode</span>()).<span class="c-method">decode</span>()
+      </div>
+    </div>
+
+    <div class="method-block" id="createToken">
+      <div class="method-header">
+        <span class="method-badge m-post">POST</span>
+        <h1 class="method-title">auth.createToken</h1>
+      </div>
+      <div class="method-path">
+        Путь: <span class="method-path-val">/auth/createToken</span>
+      </div>
+      <p class="method-desc">
+        Обменивает одноразовый код на постоянный токен доступа. Код действителен 5 минут с момента создания. После успешного обмена код уничтожается.
+      </p>
+      <div class="auth-badge no-auth"><div class="auth-dot"></div>Авторизация не требуется</div>
+
+      <div class="block-label">Параметры запроса (JSON body)</div>
+      <table class="params-table">
+        <thead>
+          <tr>
+            <th>Параметр</th>
+            <th>Тип</th>
+            <th>Обязательный</th>
+            <th>Описание</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="param-name">code</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Одноразовый 4-значный код, полученный через бота командой /code</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="block-label">Ответ</div>
+      <div class="response-status">● 200 OK</div>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-title">json</span>
+          <button class="code-block-copy" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre>{
+  <span class="c-key">"status"</span>: <span class="c-str">"success"</span>,
+  <span class="c-key">"data"</span>: {
+    <span class="c-key">"token"</span>: <span class="c-str">cc1bad5404f....</span>,
+    <span class="c-key">"ok"</span>: <span class="c-bool">true</span>
+  }
+}</pre>
+      </div>
+    <div class="method-block" id="createCode">
+      <div class="method-header">
+        <span class="method-badge m-post">POST</span>
+        <h1 class="method-title">auth.createCode</h1>
+      </div>
+      <div class="method-path">
+        Путь: <span class="method-path-val">/auth/createCode</span>
+      </div>
+      <p class="method-desc">
+        Генерирует одноразовый 4-значный код для авторизации. Код действует 5 минут. Если сессия уже существует — вернёт ошибку 409.
+      </p>
+      <div class="auth-badge required"><div class="auth-dot"></div>Только через Telegram-бота · SecretKey</div>
+
+      <div class="block-label">Параметры</div>
+      <p style="color: var(--text-muted); font-size: 14px; font-family: 'JetBrains Mono', monospace; margin-bottom: 36px;">— нет —</p>
+
+      <div class="block-label">Ответ</div>
+      <div class="response-status">● 200 OK</div>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-title">json</span>
+          <button class="code-block-copy" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre>{
+  <span class="c-key">"status"</span>: <span class="c-str">"success"</span>,
+  <span class="c-key">"data"</span>: {
+    <span class="c-key">"code"</span>: <span class="c-num">4821</span>,
+    <span class="c-key">"ok"</span>: <span class="c-bool">true</span>
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="method-block" id="reportGet">
+      <div class="method-header">
+        <span class="method-badge m-get">GET</span>
+        <h1 class="method-title">report.get</h1>
+      </div>
+      <div class="method-path">
+        Путь: <span class="method-path-val">/api/report/get</span>
+      </div>
+      <p class="method-desc">
+        Возвращает список отчётов по смене с пагинацией. Поддерживает фильтрацию по дате и типу смены.
+      </p>
+      <div class="auth-badge required"><div class="auth-dot"></div>Требует авторизацию</div>
+
+      <div class="block-label">Query параметры</div>
+      <table class="params-table">
+        <thead>
+          <tr><th>Параметр</th><th>Тип</th><th>Обязательный</th><th>Описание</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="param-name">limit</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required opt">optional</span></td>
+            <td>Кол-во записей. По умолчанию 30, макс. 100</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">offset</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required opt">optional</span></td>
+            <td>Смещение для пагинации. По умолчанию 0</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">date</span></td>
+            <td><span class="param-type">string</span></td>
+            <td><span class="param-required opt">optional</span></td>
+            <td>Фильтр по дате в формате <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan)">YYYY-MM-DD</code></td>
+          </tr>
+          <tr>
+            <td><span class="param-name">report_type</span></td>
+            <td><span class="param-type">string</span></td>
+            <td><span class="param-required opt">optional</span></td>
+            <td>Тип смены: <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan)">day</code> или <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan)">night</code></td>
+          </tr>
+          <tr>
+            <td><span class="param-name">token</span></td>
+            <td><span class="param-type">string</span></td>
+            <td><span class="param-required opt">optional</span></td>
+            <td>Токен авторизации (альтернатива заголовку)</td>
+          </tr>
+        </tbody>
+      </table>
+    <div class="method-block" id="reportCreate">
+      <div class="method-header">
+        <span class="method-badge m-post">POST</span>
+        <h1 class="method-title">report.create</h1>
+      </div>
+      <div class="method-path">
+        Путь: <span class="method-path-val">/api/report/create</span>
+      </div>
+      <p class="method-desc">
+        Создаёт отчёт по смене. Принимает JSON или multipart/form-data (если прикладываются фото). За один день можно создать один дневной и один ночной отчёт. Ночной отчёт автоматически относится к предыдущей дате.
+      </p>
+      <div class="auth-badge required"><div class="auth-dot"></div>Требует авторизацию</div>
+
+      <div class="block-label">Параметры (JSON body / form-data)</div>
+      <table class="params-table">
+        <thead>
+          <tr><th>Параметр</th><th>Тип</th><th>Обязательный</th><th>Описание</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="param-name">report_type</span></td>
+            <td><span class="param-type">string</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td><code style="font-family:'JetBrains Mono',monospace;color:var(--cyan)">day</code> или <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan)">night</code></td>
+          </tr>
+          <tr>
+            <td><span class="param-name">money</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Товарооборот за смену в рублях</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">checks</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Количество чеков за смену</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">itph</span></td>
+            <td><span class="param-type">float</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>ITPH</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">sos</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Время обслуживания в секундах</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">sos_delivery</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Время обслуживания доставки в секундах</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">guest_experience</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Количество негативных отзывов</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">comments</span></td>
+            <td><span class="param-type">string</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Комментарий к смене</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">photo0, photo1...</span></td>
+            <td><span class="param-type">file</span></td>
+            <td><span class="param-required opt">optional</span></td>
+            <td>Фотографии (только multipart/form-data). Макс. 50 МБ</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="block-label">Ответ</div>
+      <div class="response-status">● 200 OK</div>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-title">json</span>
+          <button class="code-block-copy" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre>{
+  <span class="c-key">"status"</span>: <span class="c-str">"success"</span>,
+  <span class="c-key">"data"</span>: { <span class="c-key">"ok"</span>: <span class="c-bool">true</span> }
+}</pre>
+      </div>
+    </div>
+
+    <div class="method-block" id="creditGet">
+      <div class="method-header">
+        <span class="method-badge m-get">GET</span>
+        <h1 class="method-title">credit.get</h1>
+      </div>
+      <div class="method-path">
+        Путь: <span class="method-path-val">/api/credit/get</span>
+      </div>
+      <p class="method-desc">
+        Возвращает список долгов между ресторанами. Активные долги идут первыми, затем закрытые. Внутри каждой группы — сортировка по дате убыванию.
+      </p>
+      <div class="auth-badge required"><div class="auth-dot"></div>Требует авторизацию</div>
+
+      <div class="block-label">Query параметры</div>
+      <table class="params-table">
+        <thead>
+          <tr><th>Параметр</th><th>Тип</th><th>Обязательный</th><th>Описание</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="param-name">limit</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required opt">optional</span></td>
+            <td>Кол-во записей. По умолчанию 30, макс. 100</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">offset</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required opt">optional</span></td>
+            <td>Смещение для пагинации. По умолчанию 0</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="block-label">Ответ</div>
+      <div class="response-status">● 200 OK</div>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-title">json</span>
+          <button class="code-block-copy" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre>{
+  <span class="c-key">"status"</span>: <span class="c-str">"success"</span>,
+  <span class="c-key">"data"</span>: {
+    <span class="c-key">"items"</span>: [
+      {
+        <span class="c-key">"id"</span>: <span class="c-num">1</span>,
+        <span class="c-key">"date"</span>: <span class="c-str">"2026-03-11"</span>,
+        <span class="c-key">"restaurant"</span>: <span class="c-num">1088</span>,
+        <span class="c-key">"what_take"</span>: <span class="c-str">"Булки"</span>,
+        <span class="c-key">"measurement_unit"</span>: <span class="c-str">"кс."</span>,
+        <span class="c-key">"count"</span>: <span class="c-num">5.0</span>,
+        <span class="c-key">"credit_type"</span>: <span class="c-str">"взяли"</span>,
+        <span class="c-key">"repayment_date"</span>: <span class="c-str">"2026-03-15"</span>,
+        <span class="c-key">"is_transfer"</span>: <span class="c-bool">false</span>,
+        <span class="c-key">"is_active"</span>: <span class="c-bool">true</span>
+      }
+    ],
+    <span class="c-key">"ok"</span>: <span class="c-bool">true</span>
+  }
+}</pre>
+      </div>
+    </div>
+
+    <div class="method-block" id="creditCreate">
+      <div class="method-header">
+        <span class="method-badge m-post">POST</span>
+        <h1 class="method-title">credit.create</h1>
+      </div>
+      <div class="method-path">
+        Путь: <span class="method-path-val">/api/credit/create</span>
+      </div>
+      <p class="method-desc">
+        Создаёт запись о долге между ресторанами. После создания уведомление автоматически отправляется в Telegram-чат.
+      </p>
+      <div class="auth-badge required"><div class="auth-dot"></div>Требует авторизацию</div>
+
+      <div class="block-label">Параметры (JSON body)</div>
+      <table class="params-table">
+        <thead>
+          <tr><th>Параметр</th><th>Тип</th><th>Обязательный</th><th>Описание</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="param-name">restaurant</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Номер ресторана</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">what_take</span></td>
+            <td><span class="param-type">string</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Что взяли / отдали</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">measurement_unit</span></td>
+            <td><span class="param-type">string</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Единица измерения (шт., кс., кг., сл.)</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">count</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Количество</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">credit_type</span></td>
+            <td><span class="param-type">string</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td><code style="font-family:'JetBrains Mono',monospace;color:var(--cyan)">take</code> — взяли, <code style="font-family:'JetBrains Mono',monospace;color:var(--cyan)">give</code> — отдали</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">is_transfer</span></td>
+            <td><span class="param-type">boolean</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>Является ли операция трансфером</td>
+          </tr>
+          <tr>
+            <td><span class="param-name">repayment_date</span></td>
+            <td><span class="param-type">string</span></td>
+            <td><span class="param-required opt">optional</span></td>
+            <td>Дата возврата в формате ISO 8601</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="block-label">Ответ</div>
+      <div class="response-status">● 200 OK</div>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-title">json</span>
+          <button class="code-block-copy" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre>{
+  <span class="c-key">"status"</span>: <span class="c-str">"success"</span>,
+  <span class="c-key">"data"</span>: { <span class="c-key">"ok"</span>: <span class="c-bool">true</span> }
+}</pre>
+      </div>
+    </div>
+
+    <div class="method-block" id="creditToggle">
+      <div class="method-header">
+        <span class="method-badge m-get">GET</span>
+        <h1 class="method-title">credit.toggle</h1>
+      </div>
+      <div class="method-path">
+        Путь: <span class="method-path-val">/api/credit/toggle</span>
+      </div>
+      <p class="method-desc">
+        Переключает статус долга между активным и закрытым. Если долг был активным — закрывает его, и наоборот.
+      </p>
+      <div class="auth-badge required"><div class="auth-dot"></div>Требует авторизацию</div>
+
+      <div class="block-label">Query параметры</div>
+      <table class="params-table">
+        <thead>
+          <tr><th>Параметр</th><th>Тип</th><th>Обязательный</th><th>Описание</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="param-name">credit_id</span></td>
+            <td><span class="param-type">integer</span></td>
+            <td><span class="param-required req">required</span></td>
+            <td>ID долга из credit.get</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="block-label">Ответ</div>
+      <div class="response-status">● 200 OK</div>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-title">json</span>
+          <button class="code-block-copy" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre>{
+  <span class="c-key">"status"</span>: <span class="c-str">"success"</span>,
+  <span class="c-key">"data"</span>: { <span class="c-key">"ok"</span>: <span class="c-bool">true</span> }
+}</pre>
+      </div>
+    </div>
+
+    <div class="method-block" id="userGet">
+      <div class="method-header">
+        <span class="method-badge m-get">GET</span>
+        <h1 class="method-title">user.get</h1>
+      </div>
+      <div class="method-path">
+        Путь: <span class="method-path-val">/api/user/get</span>
+      </div>
+      <p class="method-desc">
+        Возвращает информацию о текущем авторизованном пользователе.
+      </p>
+      <div class="auth-badge required"><div class="auth-dot"></div>Требует авторизацию</div>
+
+      <div class="block-label">Параметры</div>
+      <p style="color: var(--text-muted); font-size: 14px; font-family: 'JetBrains Mono', monospace; margin-bottom: 36px;">— нет —</p>
+
+      <div class="block-label">Ответ</div>
+      <div class="response-status">● 200 OK</div>
+      <div class="code-block">
+        <div class="code-block-header">
+          <span class="code-block-title">json</span>
+          <button class="code-block-copy" onclick="copyCode(this)">copy</button>
+        </div>
+        <pre>{
+  <span class="c-key">"status"</span>: <span class="c-str">"success"</span>,
+  <span class="c-key">"data"</span>: {
+    <span class="c-key">"tg_id"</span>: <span class="c-num">123456789</span>,
+    <span class="c-key">"full_name"</span>: <span class="c-str">"Иван Иванов"</span>,
+    <span class="c-key">"short_name"</span>: <span class="c-str">"Иван И."</span>,
+    <span class="c-key">"role"</span>: <span class="c-str">"admin"</span>,
+    <span class="c-key">"ok"</span>: <span class="c-bool">true</span>
+  }
+}</pre>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const sections = document.querySelectorAll('.method-block');
+  const sidebarItems = document.querySelectorAll('.sidebar-item');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        sidebarItems.forEach(item => item.classList.remove('active'));
+        const active = document.querySelector(`.sidebar-item[href="#${entry.target.id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.3 });
+
+  sections.forEach(s => observer.observe(s));
+
+  function copyCode(btn) {
+    const pre = btn.closest('.code-block').querySelector('pre');
+    navigator.clipboard.writeText(pre.innerText);
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 2000);
+  }
+</script>
+</body>
+</html>
