@@ -1,0 +1,41 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glow_sched" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2d6be4"/>
+      <stop offset="100%" stop-color="#2d6be4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="dot_grad_sched" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1a3a6e"/>
+      <stop offset="100%" stop-color="#091426"/>
+    </radialGradient>
+    <clipPath id="circle_clip">
+      <circle cx="80" cy="80" r="78"/>
+    </clipPath>
+  </defs>
+
+  <circle cx="80" cy="80" r="80" fill="#0d1626"/>
+  <circle cx="80" cy="80" r="79.5" stroke="#2d6be4" stroke-opacity="0.35" stroke-width="1"/>
+  <circle cx="80" cy="80" r="56" fill="url(#glow_sched)" opacity="0.2"/>
+
+  <g clip-path="url(#circle_clip)">
+    <rect x="30" y="50" width="100" height="76" rx="8" fill="none" stroke="#7fb0f8" stroke-opacity="0.5" stroke-width="2"/>
+    <rect x="30" y="50" width="100" height="18" rx="8" fill="#2d6be4" opacity="0.35"/>
+    <rect x="30" y="60" width="100" height="8" fill="#2d6be4" opacity="0.35"/>
+
+    <line x1="55" y1="40" x2="55" y2="58" stroke="#7fb0f8" stroke-opacity="0.7" stroke-width="5" stroke-linecap="round"/>
+    <line x1="105" y1="40" x2="105" y2="58" stroke="#7fb0f8" stroke-opacity="0.7" stroke-width="5" stroke-linecap="round"/>
+
+    <rect x="40" y="80" width="16" height="5" rx="2.5" fill="#7fb0f8" opacity="0.6"/>
+    <rect x="62" y="80" width="16" height="5" rx="2.5" fill="#7fb0f8" opacity="0.6"/>
+    <rect x="84" y="80" width="16" height="5" rx="2.5" fill="#7fb0f8" opacity="0.3"/>
+
+    <rect x="40" y="94" width="16" height="5" rx="2.5" fill="#7fb0f8" opacity="0.45"/>
+    <rect x="62" y="94" width="16" height="5" rx="2.5" fill="#00d4ff" opacity="0.75"/>
+    <rect x="84" y="94" width="16" height="5" rx="2.5" fill="#7fb0f8" opacity="0.2"/>
+
+    <rect x="84" y="88" width="30" height="30" rx="7" fill="#0d1626"/>
+    <rect x="84" y="88" width="30" height="30" rx="7" fill="url(#dot_grad_sched)" opacity="0.9"/>
+    <rect x="84.5" y="88.5" width="29" height="29" rx="6.5" fill="none" stroke="#2d6be4" stroke-opacity="0.4" stroke-width="1"/>
+    <circle cx="99" cy="103" r="7" fill="#00d4ff" opacity="0.9"/>
+  </g>
+</svg>

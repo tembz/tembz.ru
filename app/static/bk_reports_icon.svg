@@ -1,0 +1,31 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2d6be4"/>
+      <stop offset="100%" stop-color="#2d6be4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="dot_grad" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1a3a6e"/>
+      <stop offset="100%" stop-color="#091426"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Base circle -->
+  <circle cx="80" cy="80" r="80" fill="#0d1626"/>
+  <circle cx="80" cy="80" r="79.5" stroke="#2d6be4" stroke-opacity="0.35" stroke-width="1"/>
+
+  <!-- Glow -->
+  <circle cx="80" cy="80" r="48" fill="url(#glow)" opacity="0.2"/>
+
+  <!-- Text lines (scaled 4x from original 40→160) -->
+  <rect x="52" y="52" width="32" height="6" rx="3" fill="#7fb0f8" opacity="0.7"/>
+  <rect x="52" y="68" width="56" height="6" rx="3" fill="#7fb0f8" opacity="0.5"/>
+  <rect x="52" y="84" width="44" height="6" rx="3" fill="#7fb0f8" opacity="0.35"/>
+  <rect x="52" y="100" width="24" height="6" rx="3" fill="#7fb0f8" opacity="0.2"/>
+
+  <!-- Dot badge -->
+  <circle cx="108" cy="108" r="16" fill="#0d1626"/>
+  <circle cx="108" cy="108" r="16" fill="url(#dot_grad)" opacity="0.9"/>
+  <circle cx="108" cy="108" r="15.5" stroke="#2d6be4" stroke-opacity="0.4" stroke-width="1"/>
+  <circle cx="108" cy="108" r="6" fill="#00d4ff" opacity="0.9"/>
+</svg>

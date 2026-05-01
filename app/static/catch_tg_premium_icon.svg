@@ -1,0 +1,53 @@
+<svg width="160" height="160" viewBox="0 0 160 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg_glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#2d6be4" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#2d6be4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="star_grad" cx="40%" cy="35%" r="65%">
+      <stop offset="0%" stop-color="#00d4ff"/>
+      <stop offset="100%" stop-color="#2d6be4"/>
+    </radialGradient>
+    <radialGradient id="dot_grad" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#1a3a6e"/>
+      <stop offset="100%" stop-color="#091426"/>
+    </radialGradient>
+    <clipPath id="circle_clip">
+      <circle cx="80" cy="80" r="78"/>
+    </clipPath>
+  </defs>
+
+  <circle cx="80" cy="80" r="80" fill="#0d1626"/>
+  <circle cx="80" cy="80" r="79.5" stroke="#2d6be4" stroke-opacity="0.35" stroke-width="1"/>
+  <circle cx="80" cy="80" r="50" fill="url(#bg_glow)"/>
+
+  <g clip-path="url(#circle_clip)">
+    <line x1="55" y1="50" x2="47" y2="105" stroke="#7fb0f8" stroke-opacity="0.3" stroke-width="1"/>
+    <line x1="68" y1="45" x2="64" y2="105" stroke="#7fb0f8" stroke-opacity="0.3" stroke-width="1"/>
+    <line x1="80" y1="43" x2="80" y2="105" stroke="#7fb0f8" stroke-opacity="0.35" stroke-width="1"/>
+    <line x1="92" y1="45" x2="96" y2="105" stroke="#7fb0f8" stroke-opacity="0.3" stroke-width="1"/>
+    <line x1="105" y1="50" x2="113" y2="105" stroke="#7fb0f8" stroke-opacity="0.3" stroke-width="1"/>
+
+    <path d="M50 60 Q80 54 110 60" fill="none" stroke="#7fb0f8" stroke-opacity="0.3" stroke-width="1"/>
+    <path d="M47 72 Q80 65 113 72" fill="none" stroke="#7fb0f8" stroke-opacity="0.3" stroke-width="1"/>
+    <path d="M45 84 Q80 77 115 84" fill="none" stroke="#7fb0f8" stroke-opacity="0.25" stroke-width="1"/>
+    <path d="M45 96 Q80 90 115 96" fill="none" stroke="#7fb0f8" stroke-opacity="0.2" stroke-width="1"/>
+
+    <path d="M48 58 Q80 44 112 58" fill="none" stroke="#2d6be4" stroke-opacity="0.7" stroke-width="1.5"/>
+
+    <path d="M47 105 Q80 118 113 105" fill="none" stroke="#7fb0f8" stroke-opacity="0.4" stroke-width="1"/>
+    <line x1="47" y1="105" x2="80" y2="122" stroke="#7fb0f8" stroke-opacity="0.35" stroke-width="1"/>
+    <line x1="113" y1="105" x2="80" y2="122" stroke="#7fb0f8" stroke-opacity="0.35" stroke-width="1"/>
+    <circle cx="80" cy="122" r="2" fill="#2d6be4" opacity="0.5"/>
+  </g>
+
+  <path d="M80 52 L83.5 63 L95 63 L86 70 L89.5 81 L80 74.5 L70.5 81 L74 70 L65 63 L76.5 63 Z"
+        fill="url(#star_grad)" opacity="0.95"/>
+  <path d="M80 55 L82.5 63 L76.5 63 Z" fill="#ffffff" opacity="0.15"/>
+
+  <circle cx="112" cy="112" r="16" fill="#0d1626"/>
+  <circle cx="112" cy="112" r="16" fill="url(#dot_grad)" opacity="0.9"/>
+  <circle cx="112" cy="112" r="15.5" stroke="#2d6be4" stroke-opacity="0.4" stroke-width="1"/>
+  <circle cx="110" cy="106" r="2" fill="#00d4ff" opacity="0.9"/>
+  <path d="M110 108 L110 116 Q110 119 113 119 Q116 119 116 116" fill="none" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round" stroke-opacity="0.9"/>
+</svg>
