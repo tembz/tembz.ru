@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BK Reports — Schedule Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #050d1a;
+    --surface: #091426;
+    --surface2: #0d1f3c;
+    --border: rgba(45, 107, 228, 0.2);
+    --border2: rgba(0, 212, 255, 0.3);
+    --text: #e8f0fe;
+    --muted: #8bacd4;
+    --muted2: #4a6888;
+    --blue: #2d6be4;
+    --orange: #fb923c;
+    --purple: #8b7cf8;
+    --green: #4ade80;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  .glow-blob {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(120px);
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow-1 {
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(45,107,228,0.18) 0%, transparent 70%);
+    top: -200px; right: -100px;
+    animation: drift1 20s ease-in-out infinite;
+  }
+  .glow-2 {
+    width: 500px; height: 500px;
+    background: radial-gradient(circle, rgba(0,212,255,0.1) 0%, transparent 70%);
+    bottom: 0; left: -150px;
+    animation: drift2 25s ease-in-out infinite;
+  }
+  .glow-3 {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(45,107,228,0.12) 0%, transparent 70%);
+    top: 50%; left: 50%;
+    animation: drift3 30s ease-in-out infinite;
+  }
+
+  @keyframes drift1 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(-80px, 100px); }
+  }
+  @keyframes drift2 {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(100px, -60px); }
+  }
+  @keyframes drift3 {
+    0%, 100% { transform: translate(-50%, -50%) scale(1); }
+    50% { transform: translate(-50%, -50%) scale(1.3); }
+  }
+
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 18px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(11,15,26,0.93);
+    backdrop-filter: blur(14px);
+    z-index: 100;
+  }
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--text); }
+  .logo-avatar { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; }
+  .logo-name { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: var(--muted); }
+  .logo-sep { color: var(--muted2); margin: 0 4px; }
+  .logo-project { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--text); }
+
+  .wrap { max-width: 900px; margin: 0 auto; padding: 0 24px; position: relative; z-index: 1; }
+
+  .hero { padding: 72px 0 56px; border-bottom: 1px solid var(--border); }
+  .hero-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--blue);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+  .hero h1 { font-size: 38px; font-weight: 600; line-height: 1.2; letter-spacing: -0.02em; margin-bottom: 16px; }
+  .hero h1 span { color: var(--muted); }
+  .hero-desc { color: var(--muted); font-size: 16px; max-width: 560px; line-height: 1.65; margin-bottom: 32px; }
+  .hero-links { display: flex; gap: 12px; flex-wrap: wrap; }
+  .btn {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 9px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    border: 1px solid var(--border2);
+    color: var(--muted);
+    background: var(--surface);
+    transition: border-color 0.15s, color 0.15s;
+  }
+  .btn:hover { border-color: var(--blue); color: var(--text); }
+  .btn-primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+  .btn-primary:hover { background: #4a7de8; border-color: #4a7de8; color: #fff; }
+
+  section { padding: 64px 0; border-bottom: 1px solid var(--border); }
+  section:last-of-type { border-bottom: none; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted2);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .section-title { font-size: 24px; font-weight: 600; letter-spacing: -0.01em; margin-bottom: 10px; }
+  .section-desc { color: var(--muted); font-size: 14px; max-width: 600px; line-height: 1.7; margin-bottom: 36px; }
+
+  .block { background: transparent; border: none; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+  .block-header { padding: 20px 24px 16px; border-bottom: none; display: flex; align-items: flex-start; gap: 14px; }
+  .block-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .block-name { font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 3px; }
+  .block-desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+  .screenshot {
+    background: rgba(9, 20, 38, 0.72);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    overflow: hidden;
+    min-height: 160px;
+    max-height: 440px;
+  }
+  .screenshot img {
+    max-width: 100%;
+    max-height: 420px;
+    width: auto;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    border-radius: 6px;
+  }
+  .screenshot-placeholder { display: flex; flex-direction: column; align-items: center; gap: 8px; color: var(--muted2); padding: 40px; }
+  .screenshot-placeholder svg { opacity: 0.4; }
+  .screenshot-placeholder span { font-family: 'JetBrains Mono', monospace; font-size: 11px; letter-spacing: 0.06em; }
+
+  .block-details { padding: 16px 24px 20px; }
+
+  .feat-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+  .feat-list li { font-size: 13px; color: var(--muted); display: flex; align-items: flex-start; gap: 10px; line-height: 1.5; }
+  .feat-list li::before {
+    content: '—';
+    color: var(--muted2);
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    margin-top: 1px;
+  }
+  .feat-list li strong { color: var(--text); font-weight: 500; }
+
+  .feat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+  .feat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+  .feat-card-icon { font-size: 18px; margin-bottom: 10px; }
+  .feat-card-title { font-size: 13px; font-weight: 500; margin-bottom: 5px; }
+  .feat-card-text { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+  .sheet-table { width: 100%; border-collapse: collapse; font-family: 'JetBrains Mono', monospace; font-size: 12px; }
+  .sheet-table th { background: var(--surface2); color: var(--muted); padding: 8px 12px; text-align: left; border: 1px solid var(--border); font-weight: 500; }
+  .sheet-table td { padding: 7px 12px; border: 1px solid var(--border); color: var(--muted); }
+  .sheet-table tr:hover td { background: var(--surface2); }
+
+  .bot-flow { display: flex; flex-direction: column; }
+  .bot-step { display: flex; gap: 16px; position: relative; }
+  .bot-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 15px; top: 34px; bottom: -1px;
+    width: 1px;
+    background: var(--border2);
+  }
+  .bot-step-num {
+    width: 32px; height: 32px; border-radius: 50%;
+    border: 1px solid var(--border2); background: var(--surface);
+    font-family: 'JetBrains Mono', monospace; font-size: 11px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--muted); flex-shrink: 0; margin-top: 2px;
+    position: relative; z-index: 1;
+  }
+  .bot-step-body { padding: 4px 0 24px; }
+  .bot-step-title { font-size: 13px; font-weight: 500; margin-bottom: 3px; }
+  .bot-step-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+  .formula-box {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--purple);
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--purple);
+    margin: 14px 0;
+  }
+  .formula-box .formula-comment { color: var(--muted); font-size: 11px; margin-top: 6px; }
+
+  .callout {
+    background: var(--surface2);
+    border: 1px solid var(--border2);
+    border-left: 3px solid var(--blue);
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 14px;
+    line-height: 1.55;
+  }
+  .callout strong { color: var(--text); font-weight: 500; }
+
+  footer { border-top: 1px solid var(--border); padding: 32px 0; margin-top: 20px; }
+  .footer-inner {
+    max-width: 900px; margin: 0 auto; padding: 0 24px;
+    display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+  .footer-copy { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted2); }
+  .footer-link { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--muted); text-decoration: none; }
+  .footer-link:hover { color: var(--text); }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 28px; }
+    .feat-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a class="logo" href="https://tembz.ru">
+      <img src="{{ url_for('static', filename='tgk.jpeg') }}" alt="tembz logo" class="logo-avatar">
+      <span class="logo-name">tembz</span>
+      <span class="logo-sep">/</span>
+      <span class="logo-project">schedule</span>
+    </a>
+  </div>
+</header>
+
+<div class="glow-blob glow-1"></div>
+<div class="glow-blob glow-2"></div>
+<div class="glow-blob glow-3"></div>
+
+<div class="wrap">
+  <div class="hero">
+    <div class="hero-tag">● расписание · документация</div>
+    <h1>Расписание<br><span>без лишних движений</span></h1>
+    <p class="hero-desc">
+      Сайт для составления расписания ресторана. Удобный, быстрый, универсальный —
+      всё как в Axapta и даже больше. Работает в связке с Telegram-ботом,
+      выгружает Excel с автоматическим оформлением.
+    </p>
+    <div class="hero-links">
+      <a class="btn btn-primary" href="https://tembz.ru">Открыть сайт</a>
+      <a class="btn" href="https://tembz.ru">tembz.ru →</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <section>
+    <div class="section-label">обзор</div>
+    <div class="section-title">Возможности</div>
+    <p class="section-desc">Всё необходимое для работы со сменами — в одном месте, без лишних шагов.</p>
+    <div class="feat-grid">
+      <div class="feat-card">
+        <div class="feat-card-icon">🕐</div>
+        <div class="feat-card-title">Часы работы</div>
+        <div class="feat-card-text">Настройка времени открытия и закрытия прямо на главной. Режим 24/7 одним переключением.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-icon">📋</div>
+        <div class="feat-card-title">Копирование недель</div>
+        <div class="feat-card-text">Берёшь прошлую неделю за основу и редактируешь только то, что изменилось.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-icon">💾</div>
+        <div class="feat-card-title">Авто-сохранение</div>
+        <div class="feat-card-text">Любые изменения сохраняются мгновенно. Ничего не потеряется.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-icon">🎨</div>
+        <div class="feat-card-title">Темы оформления</div>
+        <div class="feat-card-text">Переключение между темами. Быстрое переключение периодов просмотра.</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-icon">🤖</div>
+        <div class="feat-card-title">Telegram-бот</div>
+        <div class="feat-card-text">Сотрудники отправляют временные боту — они подгружаются на сайт кнопкой «Подгрузить».</div>
+      </div>
+      <div class="feat-card">
+        <div class="feat-card-icon">📊</div>
+        <div class="feat-card-title">Выгрузка Excel</div>
+        <div class="feat-card-text">Автооформление, закрашивание открытий/закрытий, отдельные листы по дням.</div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <div class="section-title">Главная страница · Расписание</div>
+    <p class="section-desc">
+      Центр всего. Здесь ты видишь и редактируешь расписание на неделю,
+      управляешь временем работы и загружаешь данные от сотрудников.
+    </p>
+
+    <div class="block">
+      <div class="screenshot">
+        <img src="{{ url_for('static', filename='main.png') }}" alt="Сетка расписания">
+      </div>
+      <div class="block-header">
+        <div class="block-icon">📅</div>
+        <div class="block-meta">
+          <div class="block-name">Сетка расписания</div>
+          <div class="block-desc">Сотрудники разбиты по отделам. Для каждого — время начала и окончания смены на каждый день недели.</div>
+        </div>
+      </div>
+      <div class="block-details">
+        <ul class="feat-list">
+          <li><strong>Отделы</strong> — сотрудники сгруппированы по подразделениям: ЧБР, Безопасность, Курьер и другие</li>
+          <li><strong>Ячейки НАЧ / ОКН</strong> — время начала и окончания смены; вводится вручную или подгружается из бота</li>
+          <li><strong>Пустые блоки под временем</strong> — комментарии к смене, которые сотрудник отправил через Telegram-бот</li>
+          <li><strong>АТ</strong> — специальная отметка для автоматически назначенного времени</li>
+          <li><strong>Выходные дни</strong> — суббота и воскресенье выделены синим в шапке</li>
+          <li><strong>Авто-сохранение</strong> — все изменения применяются мгновенно</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="screenshot">
+        <img src="{{ url_for('static', filename='toolbar.png') }}" alt="Toolbar — панель управления">
+      </div>
+      <div class="block-header">
+        <div class="block-icon">⚙️</div>
+        <div class="block-meta">
+          <div class="block-name">Панель управления</div>
+          <div class="block-desc">Все основные действия — в одной строке сверху.</div>
+        </div>
+      </div>
+      <div class="block-details">
+        <ul class="feat-list">
+          <li><strong>Время работы (НАЧ / ОКН)</strong> — задаёшь начало и конец рабочего дня ресторана; влияет на сетку и расчёты в Excel</li>
+          <li><strong>Переключение недели</strong> — стрелки «‹ ›» для перехода между неделями, текущий период отображается в центре</li>
+          <li><strong>ЧБР ± N</strong> — счётчик сотрудников отдела ЧБР с кнопками изменения</li>
+          <li><strong>Копия недели</strong> — копирует расписание прошлой недели как шаблон</li>
+          <li><strong>Очистить</strong> — сбрасывает расписание текущей недели</li>
+          <li><strong>Excel</strong> — выгружает расписание в .xlsx файл</li>
+          <li><strong>Подгрузить</strong> — загружает временные, присланные сотрудниками в Telegram-бот</li>
+          <li><strong>+ Сотрудник</strong> — добавление нового сотрудника</li>
+          <li><strong>24ч</strong> — переключатель режима 24/7</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <div class="section-title">Telegram-бот</div>
+    <p class="section-desc">
+      Сотрудники не заходят на сайт. Они отправляют временные в бот —
+      менеджер видит это на сайте одной кнопкой.
+    </p>
+
+    <div class="block">
+      <div class="screenshot">
+        <img src="{{ url_for('static', filename='tgbot.jpg') }}" alt="Telegram-бот — пример диалога">
+      </div>
+      <div class="block-header">
+        <div class="block-icon">🤖</div>
+        <div class="block-meta">
+          <div class="block-name">Приём временных от сотрудников</div>
+          <div class="block-desc">Бот принимает время смены и комментарий, привязывает к нужному сотруднику и дню.</div>
+        </div>
+      </div>
+      <div class="block-details">
+        <div class="bot-flow">
+          <div class="bot-step">
+            <div class="bot-step-num">1</div>
+            <div class="bot-step-body">
+              <div class="bot-step-title">Сотрудник пишет боту</div>
+              <div class="bot-step-text">Отправляет удобное ему время — даже АТ. Может добавить комментарий к смене.</div>
+            </div>
+          </div>
+          <div class="bot-step">
+            <div class="bot-step-num">2</div>
+            <div class="bot-step-body">
+              <div class="bot-step-title">Бот принимает и хранит</div>
+              <div class="bot-step-text">Временные сохраняются на стороне бота, привязанные к сотруднику.</div>
+            </div>
+          </div>
+          <div class="bot-step">
+            <div class="bot-step-num">3</div>
+            <div class="bot-step-body">
+              <div class="bot-step-title">Менеджер нажимает «Подгрузить»</div>
+              <div class="bot-step-text">Сайт забирает данные из бота и вставляет в нужные ячейки расписания. Комментарии попадают в пустые блоки под временем.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="wrap">
+  <section>
+    <div class="section-title">Выгрузка в Excel</div>
+    <p class="section-desc">
+      Всё как в Axapta — и даже больше. Автоматическое оформление,
+      цветовая индикация, отдельные листы по дням с аналитикой.
+    </p>
+
+    <div class="block">
+      <div class="screenshot">
+        <img src="{{ url_for('static', filename='excel.jpg') }}" alt="Excel — общий лист">
+      </div>
+      <div class="block-header">
+        <div class="block-icon">📊</div>
+        <div class="block-meta">
+          <div class="block-name">Лист «ОБЩИЙ» — вся неделя</div>
+          <div class="block-desc">Главный лист с расписанием всех сотрудников по дням недели.</div>
+        </div>
+      </div>
+      <div class="block-details">
+        <ul class="feat-list">
+          <li><strong>Сотрудники по отделам</strong> — каждый отдел выделен отдельной строкой-заголовком с цветом</li>
+          <li><strong>Автозакрашивание</strong> — открытия (ранние смены) выделяются синим, закрытия (поздние) — красным</li>
+          <li><strong>АТ</strong> — отметка в ячейке для автоматически назначенного времени</li>
+          <li><strong>Листы по дням</strong> — внизу вкладки ПН, ВТ, СР, ЧТ, ПТ, СБ, ВС и отдельный лист «Блюда»</li>
+        </ul>
+
+        <div style="margin-top: 16px; overflow-x: auto;">
+          <table class="sheet-table">
+            <thead>
+              <tr>
+                <th>Лист</th>
+                <th>Содержимое</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>ОБЩИЙ</td><td>Вся неделя, все сотрудники, цветовая разметка</td></tr>
+              <tr><td>ПН … ВС</td><td>Смены дня, почасовой расчёт, план ITPH, ноу-шоу</td></tr>
+              <tr><td>Блюда</td><td>План блюд с множителем по дням</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="screenshot">
+        <img src="{{ url_for('static', filename='excel-day.jpg') }}" alt="Excel — лист по дню">
+      </div>
+      <div class="block-header">
+        <div class="block-icon">📆</div>
+        <div class="block-meta">
+          <div class="block-name">Лист по дню — аналитика</div>
+          <div class="block-desc">Каждый день — отдельный лист с детализацией смен и почасовым расчётом.</div>
+        </div>
+      </div>
+      <div class="block-details">
+        <ul class="feat-list">
+          <li><strong>Список смен дня</strong> — сотрудники с временем начала, окончания и длиной смены в часах</li>
+          <li><strong>Отделы</strong> — сотрудники разделены по подразделениям (ЧБР, Безопасность)</li>
+          <li><strong>Почасовая таблица</strong> — справа: по каждому часу показывается план, факт, план ЧБР, факт ЧБР, факт ITPH, план ITPH и итого</li>
+          <li><strong>Ноу-шоу</strong> — блок для учёта в плане дня</li>
+          <li><strong>Закрашивание открытий</strong> — ранние смены выделяются синим прямо в листе дня</li>
+        </ul>
+
+        <div class="callout">
+          <strong>Почасовой расчёт</strong> — количество сотрудников, которые работают в каждый конкретный час, рассчитывается автоматически на основе времени смен. Параметры ITPH задаются на главной странице сайта.
+        </div>
+      </div>
+    </div>
+
+    <div class="block">
+      <div class="screenshot">
+        <img src="{{ url_for('static', filename='dishes.jpg') }}" alt="Excel — лист блюд">
+      </div>
+      <div class="block-header">
+        <div class="block-icon">🍽️</div>
+        <div class="block-meta">
+          <div class="block-name">Лист «Блюда»</div>
+          <div class="block-desc">План блюд с автоматическим расчётом через множитель.</div>
+        </div>
+      </div>
+      <div class="block-details">
+        <ul class="feat-list">
+          <li><strong>База блюд</strong> — вставляешь показатели прошлой недели или заполняешь вручную</li>
+          <li><strong>Множитель</strong> — перед выгрузкой указываешь процент; он применяется к плану каждого дня</li>
+          <li><strong>Результат</strong> — на каждом дневном листе появляется план блюд с уже применённым множителем</li>
+        </ul>
+
+        <div class="formula-box">
+          план = базовые_блюда × (1 + множитель / 100)
+          <div class="formula-comment">
+            Пример: 100 блюд в четверг 15:00 · множитель 5% → план 105 блюд
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <span class="footer-copy">schedule · документация</span>
+    <a class="footer-link" href="https://tembz.ru">tembz.ru →</a>
+  </div>
+</footer>
+
+</body>
+</html>

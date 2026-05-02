@@ -11,6 +11,10 @@ def index():
 def report_html():
     return render_template("report.html")
 
+@main.route("/bk/schedule/docs")
+def schedule_docs():
+    return render_template("schedule-docs.html")
+
 @main.route("/bk/docs/methods")
 def docs_html():
     return render_template("doc.html")
