@@ -195,6 +195,133 @@
     margin: 24px 0;
   }
 
+  .music-player {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    margin: 24px 0;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, rgba(13,31,60,0.92), rgba(9,20,38,0.92));
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.12);
+  }
+
+  .player-toggle {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border-bright);
+    border-radius: 50%;
+    background: var(--cyan-dim);
+    color: var(--cyan);
+    cursor: pointer;
+    transition: transform 0.15s, background 0.2s, box-shadow 0.2s;
+  }
+
+  .player-toggle:hover {
+    background: rgba(0,212,255,0.18);
+    box-shadow: 0 0 16px rgba(0,212,255,0.12);
+  }
+
+  .player-toggle:active { transform: scale(0.94); }
+
+  .player-toggle:focus-visible,
+  .player-progress:focus-visible {
+    outline: 2px solid var(--cyan);
+    outline-offset: 3px;
+  }
+
+  .player-toggle svg {
+    width: 14px;
+    height: 14px;
+    fill: currentColor;
+  }
+
+  .player-toggle .icon-pause { display: none; }
+  .player-toggle.is-playing .icon-play { display: none; }
+  .player-toggle.is-playing .icon-pause { display: block; }
+
+  .player-body { min-width: 0; }
+
+  .music-player audio { display: none; }
+
+  .player-meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .track-info {
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .track-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .track-artist {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-left: 5px;
+  }
+
+  .track-time {
+    flex-shrink: 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .player-progress {
+    --progress: 0%;
+    width: 100%;
+    height: 4px;
+    display: block;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 10px;
+    background: linear-gradient(
+      to right,
+      var(--cyan) 0%,
+      var(--cyan) var(--progress),
+      rgba(74,104,136,0.32) var(--progress),
+      rgba(74,104,136,0.32) 100%
+    );
+    cursor: pointer;
+  }
+
+  .player-progress::-webkit-slider-thumb {
+    width: 11px;
+    height: 11px;
+    appearance: none;
+    -webkit-appearance: none;
+    border: 2px solid var(--navy-800);
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 6px rgba(0,212,255,0.7);
+  }
+
+  .player-progress::-moz-range-thumb {
+    width: 8px;
+    height: 8px;
+    border: 2px solid var(--navy-800);
+    border-radius: 50%;
+    background: var(--cyan);
+    box-shadow: 0 0 6px rgba(0,212,255,0.7);
+  }
+
   .section-label {
     font-family: 'JetBrains Mono', monospace;
     font-size: 10px;
@@ -386,7 +513,27 @@
     </div>
   </div>
 
-  <div class="divider"></div>
+  <div class="music-player">
+    <button class="player-toggle" id="playerToggle" type="button" aria-label="Включить Friday 13">
+      <svg class="icon-play" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M8 5.14v13.72a1 1 0 0 0 1.52.85l10.1-6.86a1.02 1.02 0 0 0 0-1.7L9.52 4.29A1 1 0 0 0 8 5.14Z"/>
+      </svg>
+      <svg class="icon-pause" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M7 5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V5Zm6 0a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v14a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V5Z"/>
+      </svg>
+    </button>
+    <div class="player-body">
+      <div class="player-meta">
+        <div class="track-info">
+          <span class="track-title">Friday 13</span>
+          <span class="track-artist">Kai Angel</span>
+        </div>
+        <span class="track-time"><span id="currentTime">0:00</span> / <span id="duration">--:--</span></span>
+      </div>
+      <input class="player-progress" id="playerProgress" type="range" min="0" max="1000" value="0" aria-label="Перемотка трека">
+    </div>
+    <audio id="audioPlayer" preload="metadata" src="{{ url_for('static', filename='friday13.mp3') }}"></audio>
+  </div>
 
   <div class="section-label">Каналы</div>
 
@@ -449,6 +596,61 @@
 </div>
 
 <div class="footer">tembz.ru</div>
+
+<script>
+  const audioPlayer = document.getElementById('audioPlayer');
+  const playerToggle = document.getElementById('playerToggle');
+  const playerProgress = document.getElementById('playerProgress');
+  const currentTime = document.getElementById('currentTime');
+  const duration = document.getElementById('duration');
+
+  const formatTime = (seconds) => {
+    if (!Number.isFinite(seconds)) return '--:--';
+    const minutes = Math.floor(seconds / 60);
+    const rest = Math.floor(seconds % 60).toString().padStart(2, '0');
+    return `${minutes}:${rest}`;
+  };
+
+  const setPlayingState = (isPlaying) => {
+    playerToggle.classList.toggle('is-playing', isPlaying);
+    playerToggle.setAttribute('aria-label', isPlaying ? 'Поставить Friday 13 на паузу' : 'Включить Friday 13');
+  };
+
+  const updateProgress = () => {
+    const value = audioPlayer.duration
+      ? Math.round((audioPlayer.currentTime / audioPlayer.duration) * 1000)
+      : 0;
+    playerProgress.value = value;
+    playerProgress.style.setProperty('--progress', `${value / 10}%`);
+    currentTime.textContent = formatTime(audioPlayer.currentTime);
+  };
+
+  playerToggle.addEventListener('click', () => {
+    if (audioPlayer.paused) {
+      audioPlayer.play().catch(() => setPlayingState(false));
+    } else {
+      audioPlayer.pause();
+    }
+  });
+
+  playerProgress.addEventListener('input', () => {
+    if (!audioPlayer.duration) return;
+    audioPlayer.currentTime = (Number(playerProgress.value) / 1000) * audioPlayer.duration;
+    updateProgress();
+  });
+
+  audioPlayer.addEventListener('loadedmetadata', () => {
+    duration.textContent = formatTime(audioPlayer.duration);
+    updateProgress();
+  });
+  audioPlayer.addEventListener('timeupdate', updateProgress);
+  audioPlayer.addEventListener('play', () => setPlayingState(true));
+  audioPlayer.addEventListener('pause', () => setPlayingState(false));
+  audioPlayer.addEventListener('ended', () => {
+    audioPlayer.currentTime = 0;
+    updateProgress();
+  });
+</script>
 
 </body>
 </html>
